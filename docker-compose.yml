@@ -1,0 +1,14 @@
+# Docker composer file for Thule Linux
+version: '3.8'
+services:
+  thule-linux:
+    image: "ghcr.io/fvincenzo/thule-linux:latest"
+    container_name: "thule-linux"
+    environment:
+      - UID=1000
+      - GID=1000
+    volumes:
+      - ./workspace:/workspace
+      - ~/.ssh:/home/1000/.ssh
+      - ~/.gitconfig:/home/1000/.gitconfig
+    tty: true
