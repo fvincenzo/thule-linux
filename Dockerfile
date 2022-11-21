@@ -3,12 +3,13 @@ FROM debian:latest
 # Docker variables
 ARG UID=1000
 ARG GID=1000
+ARG TARGETPLATFORM
 
 # Update packages
 RUN rm /bin/sh && ln -s bash /bin/sh \
      # Add user package
      &&  apt-get update && apt-get install -y \
-     gawk wget git-core diffstat unzip texinfo gcc-multilib libtinfo5 \
+     gawk wget git-core diffstat unzip texinfo libtinfo5 \
      build-essential chrpath socat cpio python3 python3-pip python3-pexpect \
      xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev \
      pylint3 xterm \
@@ -19,9 +20,16 @@ RUN rm /bin/sh && ln -s bash /bin/sh \
      ## For building poky docs
      make xsltproc docbook-utils fop dblatex xmlto \
      ## Install kas
-     && pip3 install kas \
-     ## Clean up
-     && rm -rf /var/lib/apt/lists/*
+     && pip3 install kas
+
+# RUN command for specific target platforms
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] ; \
+     then apt-get install -y gcc-multilib ; \
+     fi
+
+# Clean up
+RUN rm -rf /var/lib/apt/lists/*
+
 
 # Setup the environment
 RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
